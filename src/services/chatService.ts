@@ -7,6 +7,7 @@ interface StreamChatParams {
   attachments?: Attachment[];
   systemInstruction?: string;
   temperature?: number;
+  thinkingLevel?: string;
   onChunk: (text: string) => void;
   onError: (error: string) => void;
   onDone: () => void;
@@ -21,6 +22,7 @@ export const chatService = {
     attachments = [],
     systemInstruction,
     temperature = 0.7,
+    thinkingLevel = 'high',
     onChunk,
     onError,
     onDone,
@@ -39,6 +41,7 @@ export const chatService = {
           attachments,
           systemInstruction,
           temperature,
+          thinkingLevel,
         }),
         signal,
       });

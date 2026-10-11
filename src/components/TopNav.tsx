@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, History, Cpu, Settings, User, Cloud, LogOut } from 'lucide-react';
+import { Plus, History, Cpu, Settings, User, Cloud, LogOut, Sparkles } from 'lucide-react';
 import X0Logo from './X0Logo';
 import { UserProfile } from '../types/chat';
 
@@ -8,9 +8,11 @@ interface TopNavProps {
   onOpenHistory: () => void;
   onOpenModels: () => void;
   onOpenSettings: () => void;
+  onOpenThinking: () => void;
   onOpenAuth: () => void;
   currentUser: UserProfile | null;
   currentModelName: string;
+  thinkingLevelName: string;
   hasUnsavedLocalChats?: boolean;
 }
 
@@ -19,9 +21,11 @@ export const TopNav: React.FC<TopNavProps> = ({
   onOpenHistory,
   onOpenModels,
   onOpenSettings,
+  onOpenThinking,
   onOpenAuth,
   currentUser,
   currentModelName,
+  thinkingLevelName,
   hasUnsavedLocalChats,
 }) => {
   return (
@@ -78,6 +82,18 @@ export const TopNav: React.FC<TopNavProps> = ({
             <span className="hidden md:inline">Models</span>
             <span className="hidden lg:inline text-[10px] text-neutral-500 font-mono">
               ({currentModelName})
+            </span>
+          </button>
+
+          <button
+            onClick={onOpenThinking}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 border border-transparent hover:border-neutral-800 rounded transition-all whitespace-nowrap"
+            title="Configure reasoning effort"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden md:inline">Thinking</span>
+            <span className="hidden lg:inline text-[10px] text-blue-400 font-mono">
+              ({thinkingLevelName})
             </span>
           </button>
 

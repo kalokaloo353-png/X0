@@ -8,6 +8,7 @@ import ModelsModal from './components/ModelsModal';
 import SettingsModal from './components/SettingsModal';
 import AuthModal from './components/AuthModal';
 import SignInPromptPopup from './components/SignInPromptPopup';
+import ThinkingEffortPopover, { ThinkingLevelId, THINKING_LEVELS } from './components/ThinkingEffortPopover';
 import { Conversation, ChatMessage, Attachment, AVAILABLE_MODELS, UserProfile } from './types/chat';
 import { chatService } from './services/chatService';
 import { authService } from './services/authService';
@@ -17,6 +18,7 @@ const STORAGE_ACTIVE_ID_KEY = 'x0_active_chat_id_v1';
 const STORAGE_MODEL_KEY = 'x0_model_v1';
 const STORAGE_SYSTEM_PROMPT_KEY = 'x0_system_prompt_v1';
 const STORAGE_TEMP_KEY = 'x0_temperature_v1';
+const STORAGE_THINKING_LEVEL_KEY = 'x0_thinking_level_v1';
 
 export default function App() {
   // State
@@ -69,6 +71,14 @@ export default function App() {
     }
   });
 
+  const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevelId>(() => {
+    try {
+      return (localStorage.getItem(STORAGE_THINKING_LEVEL_KEY) as ThinkingLevelId) || 'high';
+    } catch {
+      return 'high';
+    }
+  });
+
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
@@ -77,6 +87,7 @@ export default function App() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [modelsOpen, setModelsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [thinkingOpen, setThinkingOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -109,6 +120,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_TEMP_KEY, temperature.toString());
   }, [temperature]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_THINKING_LEVEL_KEY, thinkingLevel);
+  }, [thinkingLevel]);
 
   // Check auth state on initial mount
   useEffect(() => {
@@ -227,6 +242,7 @@ export default function App() {
       attachments,
       systemInstruction: systemPrompt,
       temperature,
+      thinkingLevel,
       signal: controller.signal,
       onChunk: (chunk: string) => {
         accumulatedContent += chunk;
@@ -401,9 +417,11 @@ export default function App() {
         onOpenHistory={() => setHistoryOpen(true)}
         onOpenModels={() => setModelsOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
+        onOpenThinking={() => setThinkingOpen(true)}
         onOpenAuth={() => setAuthOpen(true)}
         currentUser={currentUser}
         currentModelName={currentModelInfo.name}
+        thinkingLevelName={THINKING_LEVELS.find((l) => l.id === thinkingLevel)?.name || 'High'}
         hasUnsavedLocalChats={!currentUser && conversations.length > 0}
       />
 
@@ -482,6 +500,14 @@ export default function App() {
         onSaveTemperature={setTemperature}
         onClearAllChats={handleClearAllChats}
         onExportAllChats={handleExportAllChats}
+      />
+
+      {/* Thinking Effort Popover */}
+      <ThinkingEffortPopover
+        isOpen={thinkingOpen}
+        onClose={() => setThinkingOpen(false)}
+        currentLevel={thinkingLevel}
+        onChangeLevel={setThinkingLevel}
       />
 
       {/* Authentication & Cloud Sync Modal */}

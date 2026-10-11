@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 
 dotenv.config();
 
@@ -378,6 +378,7 @@ app.post('/api/chat/stream', async (req, res) => {
     attachments = [],
     systemInstruction,
     temperature = 0.7,
+    thinkingLevel = 'high',
   } = req.body;
 
   if (!prompt && (!attachments || attachments.length === 0)) {
@@ -488,6 +489,12 @@ app.post('/api/chat/stream', async (req, res) => {
         systemInstruction ||
         'You are X0, an ultra-minimalist, exceptionally capable software and reasoning assistant. Provide direct, rigorous, beautifully formatted answers. Use clean Markdown for code blocks, tables, and lists. Avoid conversational filler or unsolicited flattery.',
       temperature: typeof temperature === 'number' ? temperature : 0.7,
+      thinkingConfig: {
+        thinkingLevel:
+          thinkingLevel === 'low' || thinkingLevel === 'medium'
+            ? ThinkingLevel.LOW
+            : ThinkingLevel.HIGH,
+      },
     };
 
     // Valid selected model (prevent deprecated models)
