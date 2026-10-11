@@ -1,0 +1,6 @@
+{
+  "name": "X0",
+  "description": "X0 — Minimalist AI workspace with streaming intelligence and cross-device secure synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
